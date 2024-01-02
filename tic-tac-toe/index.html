@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tic Tac Toe</title>
+  <style>
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px); /* Adjust the size here */
+      grid-template-rows: repeat(3, 100px); /* Adjust the size here */
+      grid-gap: 5px;
+      margin: 20px auto;
+      width: 300px;
+      height: 300px;
+    }
+    .cell {
+      border: 1px solid #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 36px;
+      cursor: pointer;
+    }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #000;
+      z-index: 9999;
+      max-width: 300px;
+      text-align: center;
+      border-radius: 10px;
+      animation: popupAnimation 0.5s ease-in-out;
+    }
+    @keyframes popupAnimation {
+      0% {
+        transform: translate(-50%, -60%);
+        opacity: 0;
+      }
+      100% {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+      }
+    }
+    .popup button {
+      padding: 8px 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="board" id="board"></div>
+
+  <div class="popup" id="winnerPopup">
+    <p id="winnerText"></p>
+    <button onclick="resetBoard()">Play Again</button>
+  </div>
+
+  <script>
+    const board = document.getElementById('board');
+    let currentPlayer = 'X';
+    const cells = Array(9).fill(null);
+
+    cells.forEach((_, index) => {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.dataset.index = index;
+      cell.addEventListener('click', handleCellClick);
+      board.appendChild(cell);
+    });
+
+    function handleCellClick(event) {
+      const selectedCell = event.target;
+      const { index } = selectedCell.dataset;
+
+      if (cells[index] !== null) return;
+
+      cells[index] = currentPlayer;
+      selectedCell.textContent = currentPlayer;
+      if (checkWinner()) {
+        showPopup(`Player ${currentPlayer} wins!`);
+        return;
+      }
+      if (checkDraw()) {
+        showPopup('It\'s a draw!');
+        return;
+      }
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+
+    function checkWinner() {
+      const winConditions = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6],
+      ];
+
+      return winConditions.some(([a, b, c]) => {
+        return cells[a] !== null && cells[a] === cells[b] && cells[a] === cells[c];
+      });
+    }
+
+    function checkDraw() {
+      return cells.every((cell) => cell !== null);
+    }
+
+    function showPopup(message) {
+      const popup = document.getElementById('winnerPopup');
+      const winnerText = document.getElementById('winnerText');
+      winnerText.textContent = message;
+      popup.style.display = 'block';
+    }
+
+    function resetBoard() {
+      cells.fill(null);
+      const cellElements = document.querySelectorAll('.cell');
+      cellElements.forEach((cell) => {
+        cell.textContent = '';
+      });
+      currentPlayer = 'X';
+      document.getElementById('winnerPopup').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
