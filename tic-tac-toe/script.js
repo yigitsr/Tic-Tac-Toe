@@ -1,1 +1,0 @@
-/Users/informascope/Desktop/tic-tac-toe/script.js
